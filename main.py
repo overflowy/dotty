@@ -28,6 +28,9 @@ def get_short_uuid() -> str:
 def check_dotfile(dotfile: str) -> str | None:
     error_msg = None
 
+
+def check_dotfile(dotfile: str) -> Path | None:
+    error_msg = None
     dotfile_path = Path(dotfile).resolve()
     if not dotfile_path.exists():
         error_msg = f"'{dotfile}' does not exist"
@@ -37,4 +40,7 @@ def check_dotfile(dotfile: str) -> str | None:
         error_msg = f"'{dotfile}' is not in your home directory"
     elif dotfile_path.name == CONFIG_FILENAME:
         error_msg = "You can't add dotty's config file to your dotfiles"
-    return error_msg
+    if error_msg:
+        print(error_msg)
+        return None
+    return dotfile_path
