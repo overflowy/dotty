@@ -3,6 +3,7 @@ from pathlib import Path
 
 import rich
 import yaml
+from rich.prompt import Prompt
 
 from exceptions import DottyConfigException
 
@@ -38,7 +39,25 @@ class DottyConfig:
             )
 
     def create(self, dotfiles_dir: str):
-        self.data = {"dotfiles_dir": dotfiles_dir, "dotfiles": {}}
+        if CONFIG_PATH.exists():
+            rich.print("❌ [red]A config file already exists[/red]")
+            ok = Prompt.ask(
+                "[blue]Do you want to overwrite it[/blue]?", choices=["y", "n"]
+            )
+            if ok != "y":
+                exit(1)
+
+        dotfiles_dir_path = Path(dotfiles_dir).resolve()
+
+        if not dotfiles_dir_path.exists():
+            rich.print("❌ [red]Dotfiles directory does not exist[/red]")
+            ok = Prompt.ask(
+                "[blue]Do you want to create it[/blue]?", choices=["y", "n"]
+            )
+            if ok == "y":
+                dotfiles_dir_path.mkdir(parents=True)
+
+        self.data = {"dotfiles_dir": str(dotfiles_dir_path.as_posix()), "dotfiles": {}}
         self.save()
 
 
