@@ -25,3 +25,16 @@ def save_config(config, config_path: str):
         yaml.safe_dump(config, f)
 def get_short_uuid() -> str:
     return str(uuid4())[:5]
+def check_dotfile(dotfile: str) -> str | None:
+    error_msg = None
+
+    dotfile_path = Path(dotfile).resolve()
+    if not dotfile_path.exists():
+        error_msg = f"'{dotfile}' does not exist"
+    elif not dotfile_path.is_file():
+        error_msg = f"'{dotfile}' is not a file"
+    elif HOME_DIRECTORY not in dotfile_path.parents:
+        error_msg = f"'{dotfile}' is not in your home directory"
+    elif dotfile_path.name == CONFIG_FILENAME:
+        error_msg = "You can't add dotty's config file to your dotfiles"
+    return error_msg
