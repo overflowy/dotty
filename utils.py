@@ -4,7 +4,7 @@ from config import CONFIG_FILENAME, HOME_DIRECTORY
 from exceptions import DottyFileException
 
 
-def validate_dotfile(dotfile: str) -> str:
+def validate_dotfile(dotfile: str, dotfiles_path: Path) -> str:
     dotfile_path = Path(dotfile).resolve()
     if not dotfile_path.exists():
         raise DottyFileException("file does not exist")
@@ -12,6 +12,8 @@ def validate_dotfile(dotfile: str) -> str:
         raise DottyFileException("not a file")
     elif HOME_DIRECTORY not in dotfile_path.parents:
         raise DottyFileException("file must be in the home directory")
+    elif dotfile_path in dotfiles_path.parents:
+        raise DottyFileException("file must not be in the dotfiles directory")
     elif dotfile_path.name == CONFIG_FILENAME:
         raise DottyFileException("dotty's own config file cannot be added")
     return dotfile
