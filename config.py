@@ -11,9 +11,6 @@ CONFIG_PATH = HOME_DIRECTORY / CONFIG_FILENAME
 
 
 class DottyConfig:
-    def __init__(self):
-        self.load()
-
     def save(self):
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
@@ -27,16 +24,20 @@ class DottyConfig:
         try:
             with open(CONFIG_PATH) as f:
                 self.data = yaml.safe_load(f)
+                self.dotfiles_dir = Path(self.data["dotfiles_dir"])
+                self.dotfiles = self.data["dotfiles"]
         except FileNotFoundError:
             raise DottyConfigException(
                 "Config file not found. Run 'dotty init' to create one."
             )
-        except yaml.YAMLError:
+        except (yaml.YAMLError, KeyError):
             raise DottyConfigException(
-                "Config file is malformed. Run 'dotty init' to create a new one."
+                "Invalid config file. Run 'dotty init' to create a new one."
             )
-        self.dotfiles_dir = Path(self.data["dotfiles_dir"])
-        self.dotfiles = self.data["dotfiles"]
+
+    def create(self, dotfiles_dir: str):
+        self.data = {"dotfiles_dir": dotfiles_dir, "dotfiles": {}}
+        self.save()
 
 
 def with_config(func):
