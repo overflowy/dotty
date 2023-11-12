@@ -17,11 +17,9 @@ def validate_dotfile(dotfile: str) -> str:
     return dotfile
 
 
-def replace_home_with_dotfiles_dir(path: Path) -> Path:
-    raise NotImplementedError
-    # return Path(dotfiles_dir) / path.relative_to(HOME_DIRECTORY)
+def to_backup_path(dotfile: Path, dotfiles_dir: Path) -> Path:
+    return dotfiles_dir / dotfile.relative_to(HOME_DIRECTORY)
 
 
-def replace_dotfiles_dir_with_home(path: Path) -> Path:
-    raise NotImplementedError
-    # return Path(HOME_DIRECTORY) / path.relative_to(dotfiles_dir)
+def to_original_path(dotfile: Path, dotfiles_dir: Path) -> Path:
+    return Path(HOME_DIRECTORY) / dotfile.relative_to(dotfiles_dir)
