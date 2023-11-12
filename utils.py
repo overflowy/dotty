@@ -1,37 +1,8 @@
 from pathlib import Path
-from typing import TypedDict
 from uuid import uuid4
 
-import rich
-import yaml
-
-CONFIG_FILENAME = "dotty.yml"
-HOME_DIRECTORY = Path.home()
-
-CONFIG_PATH = HOME_DIRECTORY / CONFIG_FILENAME
-
-
-class DottyConfig(TypedDict):
-    dotfiles_dir: str
-    dotfiles: list[dict[str, str]]
-
-
-class DottyFileException(Exception):
-    def __init__(self, file: str, message: str):
-        super().__init__(message)
-        rich.print("[red bold]ERROR[/red bold]: Cannot add file")
-        rich.print(f"'[blue]{file}[/blue]' [[red]{message}[/red]]")
-        exit(1)
-
-
-def load_config(CONFIG_PATH: Path) -> DottyConfig:
-    with open(CONFIG_PATH) as f:
-        return yaml.safe_load(f)
-
-
-def save_config(config):
-    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-        yaml.safe_dump(config, f)
+from config import CONFIG_FILENAME, HOME_DIRECTORY
+from exceptions import DottyFileException
 
 
 def get_short_uuid() -> str:
