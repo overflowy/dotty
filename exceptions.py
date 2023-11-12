@@ -2,10 +2,9 @@ import rich
 
 
 class DottyFileException(Exception):
-    def __init__(self, file: str, message: str):
+    def __init__(self, message: str):
         super().__init__(message)
-        rich.print("❌ [red]Cannot add file[/red]")
-        rich.print(f"'[blue]{file}[/blue]' [[red]{message}[/red]]")
+        rich.print(f"❌ [red]Cannot add dotfile: {message}[/red]")
         exit(1)
 
 

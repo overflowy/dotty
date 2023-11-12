@@ -12,14 +12,17 @@ CONFIG_PATH = HOME_DIRECTORY / CONFIG_FILENAME
 
 
 class DottyConfig:
-    def save(self):
+    def save(self, print_msg=True):
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-                yaml.safe_dump(self.data, f)
-                rich.print("✅ [green]Saved config file at[/green]", str(CONFIG_PATH))
+                yaml.safe_dump(self.data, f, indent=2, sort_keys=False)
+                if print_msg:
+                    rich.print(
+                        "✅ [green]Saved config file at[/green]", str(CONFIG_PATH)
+                    )
         except PermissionError:
             raise DottyConfigException(
-                "❌ Cannot save config file. File might be in use by another process."
+                "Cannot save config file. File might be in use by another process."
             )
 
     def load(self):
@@ -30,11 +33,11 @@ class DottyConfig:
                 self.dotfiles = self.data["dotfiles"]
         except FileNotFoundError:
             raise DottyConfigException(
-                "❌ Config file not found. Run 'dotty init' to create one."
+                "Config file not found. Run 'dotty init' to create one."
             )
-        except (yaml.YAMLError, KeyError):
+        except (yaml.YAMLError, KeyError, TypeError):
             raise DottyConfigException(
-                "❌ Invalid config file. Run 'dotty init' to create a new one."
+                "Invalid config file. Run 'dotty init' to create a new one."
             )
 
     def create(self, dotfiles_dir: str):
