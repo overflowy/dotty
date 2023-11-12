@@ -1,4 +1,5 @@
 from pathlib import Path
+from uuid import uuid4
 
 import rich
 import yaml
@@ -61,3 +62,10 @@ class DottyConfig:
 
         self.data = {"dotfiles_dir": str(dotfiles_dir_path.as_posix()), "dotfiles": {}}
         self.save()
+
+    def add(self, dotfile: str):
+        dotfile_path = Path(dotfile).resolve()
+        short_uuid = str(uuid4())[:6]
+        self.data["dotfiles"][str(dotfile_path.as_posix())] = short_uuid
+        rich.print("✅ [green]Added dotfile[/green]:", dotfile_path.name)
+        self.save(print_msg=False)
