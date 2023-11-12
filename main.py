@@ -12,7 +12,8 @@ def init(dotfiles_dir: str, config=DottyConfig()):
 
 
 def add(dotfile: str, config=DottyConfig()):
-    dotfile = validate_dotfile(dotfile)
+    config.load()
+    dotfile = validate_dotfile(dotfile, dotfiles_path=config.dotfiles_dir)
     config.load()
     config.add(dotfile)
 
