@@ -1,4 +1,3 @@
-import functools
 from pathlib import Path
 
 import rich
@@ -59,12 +58,3 @@ class DottyConfig:
 
         self.data = {"dotfiles_dir": str(dotfiles_dir_path.as_posix()), "dotfiles": {}}
         self.save()
-
-
-def with_config(func):
-    @functools.wraps(func)  # type: ignore
-    def wrapper(*args, **kwargs):
-        config = DottyConfig()
-        return func(config, *args, **kwargs)
-
-    return wrapper
