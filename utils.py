@@ -1,8 +1,9 @@
-from typing import TypedDict
 from pathlib import Path
+from typing import TypedDict
 from uuid import uuid4
-import yaml
+
 import rich
+import yaml
 
 CONFIG_FILENAME = "dotty.yml"
 HOME_DIRECTORY = Path.home()
@@ -29,7 +30,7 @@ def load_config(CONFIG_PATH: Path) -> DottyConfig:
 
 
 def save_config(config):
-    with open(CONFIG_PATH, "w") as f:
+    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
         yaml.safe_dump(config, f)
 
 
@@ -40,13 +41,13 @@ def get_short_uuid() -> str:
 def validate_dotfile(dotfile: str):
     dotfile_path = Path(dotfile).resolve()
     if not dotfile_path.exists():
-        raise DottyException(f"`{dotfile}` does not exist")
+        raise DottyFileException(dotfile, "file does not exist")
     elif not dotfile_path.is_file():
-        raise DottyException(f"`{dotfile}` is not a file")
+        raise DottyFileException(dotfile, "not a file")
     elif HOME_DIRECTORY not in dotfile_path.parents:
-        raise DottyException(f"`{dotfile}` is not in your home directory")
+        raise DottyFileException(dotfile, "file must be in the home directory")
     elif dotfile_path.name == CONFIG_FILENAME:
-        raise DottyException("dotty's config file cannot be added as a dotfile")
+        raise DottyFileException(dotfile, "dotty's config file cannot be added")
     return dotfile_path
 
 
