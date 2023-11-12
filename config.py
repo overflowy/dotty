@@ -1,6 +1,7 @@
 import functools
 from pathlib import Path
 
+import rich
 import yaml
 
 from exceptions import DottyConfigException
@@ -15,9 +16,10 @@ class DottyConfig:
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
                 yaml.safe_dump(self.data, f)
+                rich.print("✅ [green]Saved config file at[/green]", str(CONFIG_PATH))
         except PermissionError:
             raise DottyConfigException(
-                "Cannot save config file. File might be in use by another process."
+                "❌ Cannot save config file. File might be in use by another process."
             )
 
     def load(self):
@@ -28,11 +30,11 @@ class DottyConfig:
                 self.dotfiles = self.data["dotfiles"]
         except FileNotFoundError:
             raise DottyConfigException(
-                "Config file not found. Run 'dotty init' to create one."
+                "❌ Config file not found. Run 'dotty init' to create one."
             )
         except (yaml.YAMLError, KeyError):
             raise DottyConfigException(
-                "Invalid config file. Run 'dotty init' to create a new one."
+                "❌ Invalid config file. Run 'dotty init' to create a new one."
             )
 
     def create(self, dotfiles_dir: str):
