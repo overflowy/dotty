@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import TypedDict
+from uuid import uuid4
 
 import yaml
 
@@ -22,3 +23,5 @@ def load_config(config_path: str) -> DottyConfig:
 def save_config(config, config_path: str):
     with open(config_path, "w") as f:
         yaml.safe_dump(config, f)
+def get_short_uuid() -> str:
+    return str(uuid4())[:5]
