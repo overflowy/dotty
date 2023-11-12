@@ -15,12 +15,11 @@ class DottyConfig(TypedDict):
     dotfiles: list[dict[str, str]]
 
 
-class DottyException(Exception):
-    """Print a message to the console with rich and exit."""
-
-    def __init__(self, message: str):
+class DottyFileException(Exception):
+    def __init__(self, file: str, message: str):
         super().__init__(message)
-        rich.print(f"[bold red]Error: {message}[/bold red]")
+        rich.print("[red bold]ERROR[/red bold]: Cannot add file")
+        rich.print(f"'[blue]{file}[/blue]' [[red]{message}[/red]]")
         exit(1)
 
 
