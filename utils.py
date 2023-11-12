@@ -37,8 +37,14 @@ def to_original_path(dotfile_path: Path, dotfiles_dir: Path) -> Path:
 
 def compare_paths(dotfile_path: Path, backup_path: Path) -> FileCopyInstruction | None:
     if not dotfile_path.exists():
-        rich.print(f"❌ [yellow]'{dotfile_path}' does not exist[/yellow], skipping...")
-        return None
+        if not backup_path.exists():
+            rich.print(
+                f"❌ [yellow]'{dotfile_path}' not found (stale entry?)[/yellow], skipping"
+            )
+            return None
+        else:
+            rich.print(f"🔹 '{dotfile_path}' not found, preparing to restore")
+            return FileCopyInstruction(src=backup_path, dst=dotfile_path)
 
     if not backup_path.exists():
         rich.print(f"🔹 '{dotfile_path}' is not backed up, preparing to back up")

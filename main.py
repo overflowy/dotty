@@ -40,5 +40,3 @@ def sync(dry_run: bool = False, config=DottyConfig()):
         copy2(instr.src, instr.dst)
 
     rich.print("✅ [green]All dotfiles are up to date[/green].")
-
-
