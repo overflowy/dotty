@@ -14,23 +14,23 @@ from exceptions import DottyFileException
 def validate_dotfile(dotfile: str, dotfiles_path: Path) -> str:
     dotfile_path = Path(dotfile).resolve()
     if not dotfile_path.exists():
-        raise DottyFileException("file does not exist.")
+        raise DottyFileException("file does not exist")
     elif not dotfile_path.is_file():
-        raise DottyFileException("not a file.")
+        raise DottyFileException("not a file")
     elif HOME_DIRECTORY not in dotfile_path.parents:
-        raise DottyFileException("file must be in the home directory.")
+        raise DottyFileException("file must be in the home directory")
     elif dotfile_path in dotfiles_path.parents:
-        raise DottyFileException("file must not be in the dotfiles directory.")
+        raise DottyFileException("file must not be in the dotfiles directory")
     elif dotfile_path.name == CONFIG_FILENAME:
-        raise DottyFileException("dotty's own config file cannot be added.")
+        raise DottyFileException("dotty's own config file cannot be added")
     return dotfile
 
 
 class FileAction(Enum):
-    NOTHING = "✅ Nothing"
-    BACK_UP = "💾 Back up"
-    RESTORE = "🔄 Restore"
-    NOT_FOUND = "❌ Not found"
+    NOTHING = "-"
+    BACK_UP = "Back up"
+    RESTORE = "Restore"
+    NOT_FOUND = "Not found (skipped)"
 
 
 class FileCopyInstruction(NamedTuple):
@@ -93,6 +93,7 @@ class SyncUtil:
         for instr in self.copy_instructions:
             instr.dst.parent.mkdir(parents=True, exist_ok=True)
             copy2(instr.src, instr.dst)
+        rich.print("✅ [green]Done[/green].")
 
     def _to_backup_path(self, dotfile_path: Path) -> Path:
         return self.dotfiles_dir / dotfile_path.relative_to(HOME_DIRECTORY)
