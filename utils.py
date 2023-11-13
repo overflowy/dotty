@@ -35,28 +35,50 @@ def to_original_path(dotfile_path: Path, dotfiles_dir: Path) -> Path:
     return Path(HOME_DIRECTORY) / dotfile_path.relative_to(dotfiles_dir)
 
 
+def handle_dotfile_not_exists(
+    dotfile_path: Path, backup_path: Path
+) -> FileCopyInstruction | None:
+    if not backup_path.exists():
+        rich.print(
+            f"❌ [yellow]'{dotfile_path}' not found (stale entry?)[/yellow], skipping"
+        )
+        return None
+    else:
+        rich.print(f"🔹 '{dotfile_path}' not found, preparing to restore")
+        return FileCopyInstruction(src=backup_path, dst=dotfile_path)
+
+
+def handle_backup_not_exists(
+    dotfile_path: Path, backup_path: Path
+) -> FileCopyInstruction:
+    rich.print(f"🔹 '{dotfile_path}' is not backed up, preparing to back up")
+    return FileCopyInstruction(src=dotfile_path, dst=backup_path)
+
+
+def compare_file_modification_times(
+    dotfile_path: Path, backup_path: Path
+) -> FileCopyInstruction | None:
+    dotfile_mtime = dotfile_path.stat().st_mtime
+    backup_mtime = backup_path.stat().st_mtime
+
+    if dotfile_mtime > backup_mtime:
+        rich.print(f"🔹 '{dotfile_path}' is newer, preparing to back up")
+        return FileCopyInstruction(src=dotfile_path, dst=backup_path)
+
+    elif dotfile_mtime < backup_mtime:
+        rich.print(f"🔹 '{dotfile_path}' is older, preparing to restore")
+        return FileCopyInstruction(src=backup_path, dst=dotfile_path)
+
+    else:
+        rich.print(f"🔹 '{dotfile_path}' is up to date, skipping")
+        return None
+
+
 def compare_paths(dotfile_path: Path, backup_path: Path) -> FileCopyInstruction | None:
     if not dotfile_path.exists():
-        if not backup_path.exists():
-            rich.print(
-                f"❌ [yellow]'{dotfile_path}' not found (stale entry?)[/yellow], skipping"
-            )
-            return None
-        else:
-            rich.print(f"🔹 '{dotfile_path}' not found, preparing to restore")
-            return FileCopyInstruction(src=backup_path, dst=dotfile_path)
+        return handle_dotfile_not_exists(dotfile_path, backup_path)
 
     if not backup_path.exists():
-        rich.print(f"🔹 '{dotfile_path}' is not backed up, preparing to back up")
-        return FileCopyInstruction(src=dotfile_path, dst=backup_path)
-    else:
-        dotfile_mtime = dotfile_path.stat().st_mtime
-        backup_mtime = backup_path.stat().st_mtime
+        return handle_backup_not_exists(dotfile_path, backup_path)
 
-        if dotfile_mtime > backup_mtime:
-            rich.print(f"🔹 '{dotfile_path}' is newer, preparing to back up")
-            return FileCopyInstruction(src=dotfile_path, dst=backup_path)
-
-        elif dotfile_mtime < backup_mtime:
-            rich.print(f"🔹 '{dotfile_path}' is older, preparing to restore")
-            return FileCopyInstruction(src=backup_path, dst=dotfile_path)
+    return compare_file_modification_times(dotfile_path, backup_path)
