@@ -74,7 +74,7 @@ def compare_file_modification_times(
         return None
 
 
-def compare_paths(dotfile_path: Path, backup_path: Path) -> FileCopyInstruction | None:
+def diff_paths(dotfile_path: Path, backup_path: Path) -> FileCopyInstruction | None:
     if not dotfile_path.exists():
         return handle_dotfile_not_exists(dotfile_path, backup_path)
 

@@ -4,7 +4,12 @@ from shutil import copy2
 import rich
 
 from config import DottyConfig
-from utils import FileCopyInstruction, compare_paths, to_backup_path, validate_dotfile
+from file_utils import (
+    FileCopyInstruction,
+    diff_paths,
+    to_backup_path,
+    validate_dotfile,
+)
 
 
 def init(dotfiles_dir: str, config=DottyConfig()):
@@ -27,7 +32,7 @@ def sync(dry_run: bool = False, config=DottyConfig()):
     for dotfile in config.dotfiles:
         dotfile_path = Path(dotfile)
         backup_path = to_backup_path(dotfile_path, config.dotfiles_dir)
-        if paths := compare_paths(dotfile_path, backup_path):
+        if paths := diff_paths(dotfile_path, backup_path):
             copy_instructions.append(paths)
 
     if dry_run:
