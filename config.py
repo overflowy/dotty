@@ -68,5 +68,5 @@ class DottyConfig:
         rich.print("✅ [green]Added dotfile[/green]:", dotfile_path.name)
         self.save(print_msg=False)
 
-    def remove(self, dotfile_or_uuid: str):
+    def remove(self, dotfile_or_uid: str):
         pass

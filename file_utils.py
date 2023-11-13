@@ -49,7 +49,8 @@ class SyncUtil:
         self.table = Table()
         self.table.add_column("Action", no_wrap=True)
         self.table.add_column("File", style="magenta", overflow="fold")
-        self.table.add_column("Dir", style="cyan", overflow="ellipsis")
+        self.table.add_column("Dir", style="cyan")
+        self.table.add_column("UID", justify="right", style="yellow")
         self.table.add_column("Size", justify="right", style="green")
 
     def _to_readable_size(self, size: int) -> str:
@@ -63,14 +64,15 @@ class SyncUtil:
             return f"{size / 1024 ** 3:.2f} GB"
 
     def _add_row(self, action: FileAction, file_path: Path):
+        file_name = file_path.name
+        dir_name = str(file_path.parent.name)
+        uid = self.config.dotfiles.get(file_path.as_posix())
         try:
             readable_size = self._to_readable_size(file_path.stat().st_size)
         except FileNotFoundError:
             readable_size = ""
 
-        self.table.add_row(
-            action.value, file_path.name, str(file_path.parent.name), readable_size
-        )
+        self.table.add_row(action.value, file_name, dir_name, uid, readable_size)
 
     def print_report(self):
         console = Console()
